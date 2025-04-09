@@ -1,7 +1,7 @@
 'use client'
 
 import { useSearchParams } from 'next/navigation'
-import { useEffect, useState } from 'react'
+import { useEffect, useState, Suspense } from 'react'
 import Link from 'next/link'
 
 type SearchResult = {
@@ -9,7 +9,7 @@ type SearchResult = {
   name: string
 }
 
-export default function SearchPage() {
+function SearchContent() {
   const searchParams = useSearchParams()
   const query = searchParams.get('q') || ''
 
@@ -38,7 +38,7 @@ export default function SearchPage() {
   }, [query])
 
   return (
-    <main className="min-h-screen bg-black text-white p-6 max-w-5xl mx-auto">
+    <>
       <h1 className="text-2xl font-bold mb-6">🔍 검색 결과: {query}</h1>
 
       {loading && <p className="text-gray-400">로딩 중...</p>}
@@ -61,6 +61,16 @@ export default function SearchPage() {
           </Link>
         ))}
       </div>
+    </>
+  )
+}
+
+export default function SearchPage() {
+  return (
+    <main className="min-h-screen bg-black text-white p-6 max-w-5xl mx-auto">
+      <Suspense fallback={<p className="text-gray-400">검색어를 불러오는 중...</p>}>
+        <SearchContent />
+      </Suspense>
     </main>
   )
 }
