@@ -44,6 +44,13 @@ export default async function GuildLeaguePage() {
     "bg-gradient-to-r from-amber-700 to-amber-900 text-white", // 3위
   ]
 
+  // 🔻 변동에 따른 색상
+  const getRankChangeStyle = (change: string) => {
+    if (change.startsWith("▲")) return "text-red-400"
+    if (change.startsWith("▼")) return "text-blue-400"
+    return "text-gray-300"
+  }
+
   return (
     <Card className="p-4 max-w-screen-xl mx-auto mt-6">
       <div className="flex flex-col items-center justify-center mb-4">
@@ -53,7 +60,7 @@ export default async function GuildLeaguePage() {
         </div>
         <div className="flex justify-between w-full text-sm text-gray-400 mt-1 px-1">
           <span>⏰ 매일 오전 중에 업데이트 중입니다.</span>
-          <span>📅 {updatedAt}</span>
+          <span>📅 2025-04-10</span>
         </div>
       </div>
 
@@ -68,39 +75,42 @@ export default async function GuildLeaguePage() {
           </tr>
         </thead>
         <tbody>
-          {guilds.map((guild) => (
-            <tr
-              key={guild.name}
-              className={`border-b border-gray-700 ${
-                guild.rank <= 3 ? rankStyles[guild.rank - 1] : "text-white"
-              }`}
-            >
-              <td className="p-2 font-semibold">
-                {guild.rank}
-                {guild.rankChange && guild.rankChange !== "-" && (
-                  <span className="text-xs font-normal text-gray-200 ml-1">
-                    {guild.rankChange}
+          {guilds.map((guild) => {
+            const rankChange = guild.rankChange || "-"
+            const changeColor = getRankChangeStyle(rankChange)
+
+            return (
+              <tr
+                key={guild.name}
+                className={`border-b border-gray-700 ${
+                  guild.rank <= 3 ? rankStyles[guild.rank - 1] : "text-white"
+                }`}
+              >
+                <td className="p-2 font-semibold flex items-center justify-center gap-1">
+                  <span className="w-6 text-right">{guild.rank}</span>
+                  <span className={`w-6 text-left text-xs ${changeColor}`}>
+                    {rankChange}
                   </span>
-                )}
-              </td>
-              <td className="p-2 font-semibold">{guild.name}</td>
-              <td className="p-2">
-                {guild.wins}승 / {guild.losses}패
-              </td>
-              <td className="p-2 font-semibold">
-                {guild.winRate >= 80 ? (
-                  <span className="text-rose-400 font-bold">{guild.winRate}%</span>
-                ) : guild.winRate >= 70 ? (
-                  <span className="text-cyan-300 font-semibold">{guild.winRate}%</span>
-                ) : guild.winRate < 30 ? (
-                  <span className="text-blue-400">{guild.winRate}%</span>
-                ) : (
-                  <span className="text-gray-300">{guild.winRate}%</span>
-                )}
-              </td>
-              <td className="p-2">{guild.score}</td>
-            </tr>
-          ))}
+                </td>
+                <td className="p-2 font-semibold">{guild.name}</td>
+                <td className="p-2">
+                  {guild.wins}승 / {guild.losses}패
+                </td>
+                <td className="p-2 font-semibold">
+                  {guild.winRate >= 80 ? (
+                    <span className="text-rose-400 font-bold">{guild.winRate}%</span>
+                  ) : guild.winRate >= 70 ? (
+                    <span className="text-cyan-300 font-semibold">{guild.winRate}%</span>
+                  ) : guild.winRate < 30 ? (
+                    <span className="text-blue-400">{guild.winRate}%</span>
+                  ) : (
+                    <span className="text-gray-300">{guild.winRate}%</span>
+                  )}
+                </td>
+                <td className="p-2">{guild.score}</td>
+              </tr>
+            )
+          })}
         </tbody>
       </table>
     </Card>
