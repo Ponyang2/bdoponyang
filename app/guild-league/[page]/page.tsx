@@ -102,11 +102,9 @@ export default async function GuildLeaguePage() {
                 </td>
                 <td className="p-2 font-semibold">
                   {guild.winRate >= 80 ? (
-                    <span className="text-rose-400 font-bold">{guild.winRate}%</span>
+                    <span className="text-red-500 font-bold">{guild.winRate}%</span>
                   ) : guild.winRate >= 70 ? (
-                    <span className="text-emerald-300 font-semibold">{guild.winRate}%</span>
-                  ) : guild.winRate < 30 ? (
-                    <span className="text-blue-400">{guild.winRate}%</span>
+                    <span className="text-blue-400 font-semibold">{guild.winRate}%</span>
                   ) : (
                     <span className="text-shadow-black">{guild.winRate}%</span>
                   )}
