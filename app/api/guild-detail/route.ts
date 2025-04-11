@@ -11,8 +11,8 @@ export async function GET(req: NextRequest) {
       `SELECT g.id, g.name, g.leader, g.member_count, g.creation_date,
               l.rank, l.wins, l.losses, l.updated_at
        FROM guilds g
-       LEFT JOIN guild_league l ON g.name = l.guild_name
-       WHERE g.name = $1`,
+       LEFT JOIN guild_league l ON LOWER(g.name) = LOWER(l.guild_name)
+       WHERE LOWER(g.name) = LOWER($1)`,  // ✅ 대소문자 무시 비교
       [name]
     )
 

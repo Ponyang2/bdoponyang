@@ -100,7 +100,7 @@ export default function WorldBossCard() {
 
   const bossCount = current.bosses.length
   const sizeClass =
-    bossCount === 1 ? 'w-40 h-45' :
+    bossCount === 1 ? 'w-40 h-48' :
     bossCount === 2 ? 'w-34 h-34' :
     bossCount === 3 ? 'w-34 h-34' :
     bossCount === 4 ? 'w-25 h-27' :

@@ -5,6 +5,7 @@ import { getAllGuildLeague } from "@/actions/guild-league/get-all"
 import { getRankChanges } from "lib/guild-league-history"
 import { Card } from "@/components/card"
 import { Trophy } from "lucide-react"
+import Link from "next/link"
 
 interface Guild {
   name: string
@@ -39,12 +40,11 @@ export default async function GuildLeaguePage() {
     data.length > 0 ? new Date(data[0].updated_at).toISOString().split("T")[0] : ""
 
   const rankStyles = [
-    "bg-gradient-to-r from-amber-500 to-yellow-700 text-white", // 1위
-    "bg-gradient-to-r from-gray-400 to-gray-500 text-white",   // 2위
-    "bg-gradient-to-r from-amber-700 to-amber-900 text-white", // 3위
+    "bg-gradient-to-r from-amber-500 to-yellow-500 text-white", // 1위
+    "bg-gradient-to-r from-gray-500 to-gray-400 text-white",   // 2위
+    "bg-gradient-to-r from-amber-800 to-amber-500 text-white", // 3위
   ]
 
-  // 🔻 변동에 따른 색상
   const getRankChangeStyle = (change: string) => {
     if (change.startsWith("▲")) return "text-red-400"
     if (change.startsWith("▼")) return "text-blue-400"
@@ -52,21 +52,21 @@ export default async function GuildLeaguePage() {
   }
 
   return (
-    <Card className="p-4 max-w-screen-xl mx-auto mt-6">
+    <Card className="p-4 max-w-screen-xl mx-auto mt-4">
       <div className="flex flex-col items-center justify-center mb-4">
         <div className="flex items-center gap-2 text-2xl font-bold text-white">
           <Trophy className="w-6 h-6 fill-yellow-400 text-yellow-400" />
           <span>길드 리그 순위</span>
         </div>
-        <div className="flex justify-between w-full text-sm text-gray-400 mt-1 px-1">
+        <div className="flex justify-between w-full text-sm text-white-400 mt-1 px-1">
           <span>⏰ 매일 오전 중에 업데이트 중입니다.</span>
-          <span>📅 2025-04-10</span>
+          <span>📅 {updatedAt}</span>
         </div>
       </div>
 
-      <table className="w-full text-sm text-center">
+      <table className="w-full text-xl text-center">
         <thead>
-          <tr className="border-b border-gray-700 text-gray-300">
+          <tr className="border-b bg-gray-800 border-gray-700 text-white-300">
             <th className="p-2">순위</th>
             <th className="p-2">길드명</th>
             <th className="p-2">승/패</th>
@@ -82,8 +82,8 @@ export default async function GuildLeaguePage() {
             return (
               <tr
                 key={guild.name}
-                className={`border-b border-gray-700 ${
-                  guild.rank <= 3 ? rankStyles[guild.rank - 1] : "text-white"
+                className={`border-b border-gray-700 text-white ${
+                  guild.rank <= 3 ? rankStyles[guild.rank - 1] : ""
                 }`}
               >
                 <td className="p-2 font-semibold flex items-center justify-center gap-1">
@@ -92,22 +92,26 @@ export default async function GuildLeaguePage() {
                     {rankChange}
                   </span>
                 </td>
-                <td className="p-2 font-semibold">{guild.name}</td>
-                <td className="p-2">
+                <td className="p-2 font-semibold text-white-300 hover:text-blue-400">
+                 <Link href={`/guild/${encodeURIComponent(guild.name)}`}>
+                    {guild.name}
+                  </Link>
+                </td>
+                <td className="p-2 font-normal">
                   {guild.wins}승 / {guild.losses}패
                 </td>
                 <td className="p-2 font-semibold">
                   {guild.winRate >= 80 ? (
                     <span className="text-rose-400 font-bold">{guild.winRate}%</span>
                   ) : guild.winRate >= 70 ? (
-                    <span className="text-cyan-300 font-semibold">{guild.winRate}%</span>
+                    <span className="text-emerald-300 font-semibold">{guild.winRate}%</span>
                   ) : guild.winRate < 30 ? (
                     <span className="text-blue-400">{guild.winRate}%</span>
                   ) : (
-                    <span className="text-gray-300">{guild.winRate}%</span>
+                    <span className="text-shadow-black">{guild.winRate}%</span>
                   )}
                 </td>
-                <td className="p-2">{guild.score}</td>
+                <td className="p-2 font-semibold">{guild.score}</td>
               </tr>
             )
           })}

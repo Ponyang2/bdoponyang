@@ -1,5 +1,6 @@
 "use client"
 
+import { useEffect } from "react"
 import { Card } from "@/components/card"
 import Image from "next/image"
 import { FaTrophy } from "react-icons/fa"
@@ -24,6 +25,11 @@ interface GuildDetail {
 }
 
 export default function GuildDetailClient({ guild }: { guild: GuildDetail }) {
+  // ✅ 페이지 진입 시 스크롤 최상단으로 이동
+  useEffect(() => {
+    window.scrollTo(0, 0)
+  }, [])
+
   const renderTrophy = () => {
     if (guild.rank === 1) return <FaTrophy className="w-4 h-4 inline text-yellow-400" title="1위" />
     if (guild.rank === 2) return <FaTrophy className="w-4 h-4 inline text-gray-300" title="2위" />

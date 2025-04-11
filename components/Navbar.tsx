@@ -87,9 +87,9 @@ export default function Navbar() {
           <Link href="/guild-league" className="px-4 py-2 hover:text-yellow-400 hover:border-b-2 hover:border-yellow-400 transition-all duration-150">
             길드 리그
           </Link>
-          <a className="px-4 py-2 hover:text-yellow-400 hover:border-b-2 hover:border-yellow-400 transition-all duration-150" href="#">
+          <Link href="/solare-league" className="px-4 py-2 hover:text-yellow-400 hover:border-b-2 hover:border-yellow-400 transition-all duration-150">
             솔라레의 창
-          </a>
+          </Link>
           <a className="px-4 py-2 hover:text-yellow-400 hover:border-b-2 hover:border-yellow-400 transition-all duration-150" href="#">
             통계
           </a>

@@ -9,9 +9,11 @@ import SolareTop10 from '@/components/home/SolareTop10'
 export default function Home() {
   return (
     <main className="bg-zinc-900 text-white py-10">
-      <div className="max-w-[1400px] mx-auto px-4 grid grid-cols-1 lg:grid-cols-12 gap-6">
+      <div className="max-w-[1400px] mx-auto px-4 grid gap-6
+                      grid-cols-1
+                      lg:grid-cols-[300px_1fr_400px]">
         {/* 좌측: 업데이트, 쿠폰 */}
-        <aside className="lg:col-span-3 space-y-6">
+        <aside className="space-y-6">
           <div className="bg-zinc-800 p-4 rounded-lg border border-zinc-700">
             <UpdateCard />
           </div>
@@ -21,13 +23,13 @@ export default function Home() {
         </aside>
 
         {/* 중앙: 월드보스 + 시간표 버튼 + 거점/점령전 */}
-        <section className="lg:col-span-6 space-y-6">
+        <section className="space-y-6">
           <WorldBossCard />
           <WarScheduleCard />
         </section>
 
         {/* 우측: 길드 리그 / 솔라레 */}
-        <aside className="lg:col-span-3 space-y-6">
+        <aside className="space-y-6">
           <GuildLeagueTop10Server />
           <SolareTop10 />
         </aside>
