@@ -40,9 +40,9 @@ export default async function GuildLeaguePage() {
     data.length > 0 ? new Date(data[0].updated_at).toISOString().split("T")[0] : ""
 
   const rankStyles = [
-    "bg-gradient-to-r from-amber-500 to-yellow-500 text-white", // 1위
-    "bg-gradient-to-r from-gray-500 to-gray-400 text-white",   // 2위
-    "bg-gradient-to-r from-amber-800 to-amber-500 text-white", // 3위
+    "bg-gradient-to-r from-yellow-500 to-amber-500 text-white", // 1위
+    "bg-gradient-to-r from-gray-400 to-gray-500 text-white",   // 2위
+    "bg-gradient-to-r from-amber-500 to-amber-800 text-white", // 3위
   ]
 
   const getRankChangeStyle = (change: string) => {
