@@ -3,7 +3,7 @@
 import { getTier } from '@/lib/utils/tier'
 
 export interface Entry {
-  family_name: string
+  name: string
   subclass: string
   class: string
   wins: number
@@ -31,7 +31,7 @@ export default function SolareAdminForm({
   const data = isOverall ? overall : (classData[selectedClass] ?? [])
 
   const ensureEntry = (entry?: Entry): Entry => ({
-    family_name: entry?.family_name || '',
+    name: entry?.name || '',
     subclass: entry?.subclass || '',
     class: entry?.class || '',
     wins: entry?.wins ?? 0,
@@ -48,7 +48,7 @@ export default function SolareAdminForm({
       [field]: ['wins', 'draws', 'losses', 'score'].includes(field)
         ? parseInt(value) || 0
         : value
-    } as Entry
+    }
     updated[index] = newEntry
 
     if (isOverall) {

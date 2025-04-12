@@ -5,7 +5,7 @@ import classList from '@/lib/constants/class-list'
 import { useEffect, useState } from 'react'
 
 export interface Entry {
-  family_name: string
+  name: string // ✅ 수정됨
   subclass: string
   class: string
   wins: number

@@ -17,14 +17,14 @@ interface ClassEntry {
 // ✅ 전체 랭킹 순위 변동 계산
 export async function getSolareOverallRankChanges(today: OverallEntry[]) {
   const result = await db.query(`
-    SELECT name, overall_rank
+    SELECT name, class_rank
     FROM solare_overall_league_history
     WHERE snapshot_date = CURRENT_DATE - INTERVAL '1 day'
   `)
 
   const yesterdayMap = new Map<string, number>()
   result.rows.forEach((row: any) => {
-    yesterdayMap.set(row.name, row.overall_rank)
+    yesterdayMap.set(row.name, row.class_rank)
   })
 
   return today.map((entry) => {

@@ -57,7 +57,7 @@ export default function RankTrendChart({ guildName }: { guildName: string }) {
         <Tooltip
           contentStyle={{ backgroundColor: 'black', border: 'none' }}
           labelStyle={{ color: '#fff' }}
-          formatter={(value) => `길드리그 순위 : ${value}`}
+          formatter={(value) => `${value}`}
         />
         <Line
           type="monotone"

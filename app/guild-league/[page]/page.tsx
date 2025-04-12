@@ -40,9 +40,9 @@ export default async function GuildLeaguePage() {
     data.length > 0 ? new Date(data[0].updated_at).toISOString().split("T")[0] : ""
 
   const rankStyles = [
-    "bg-gradient-to-r from-yellow-500 to-amber-500 text-white", // 1위
-    "bg-gradient-to-r from-gray-400 to-gray-500 text-white",   // 2위
-    "bg-gradient-to-r from-amber-500 to-amber-800 text-white", // 3위
+    "bg-gradient-to-r from-yellow-500 to-black-700 text-white", // 1위
+    "bg-gradient-to-r from-gray-400 to-black-700 text-white",   // 2위
+    "bg-gradient-to-r from-amber-700 to-black-700 text-white", // 3위
   ]
 
   const getRankChangeStyle = (change: string) => {
@@ -54,9 +54,10 @@ export default async function GuildLeaguePage() {
   return (
     <Card className="p-4 max-w-screen-xl mx-auto mt-4">
       <div className="flex flex-col items-center justify-center mb-4">
-        <div className="flex items-center gap-2 text-2xl font-bold text-white">
+        <div className="flex items-center gap-2 text-3xl font-bold text-white">
           <Trophy className="w-6 h-6 fill-yellow-400 text-yellow-400" />
-          <span>길드 리그 순위</span>
+          <span>길드 리그 - 정규 시즌 순위</span>
+          <Trophy className="w-6 h-6 fill-yellow-400 text-yellow-400" />
         </div>
         <div className="flex justify-between w-full text-sm text-white-400 mt-1 px-1">
           <span>⏰ 매일 오전 중에 업데이트 중입니다.</span>
@@ -66,7 +67,7 @@ export default async function GuildLeaguePage() {
 
       <table className="w-full text-xl text-center">
         <thead>
-          <tr className="border-b bg-gray-800 border-gray-700 text-white-300">
+          <tr className="border-0 bg-gray-800 border-gray-700 text-white-300">
             <th className="p-2">순위</th>
             <th className="p-2">길드명</th>
             <th className="p-2">승/패</th>
@@ -102,9 +103,9 @@ export default async function GuildLeaguePage() {
                 </td>
                 <td className="p-2 font-semibold">
                   {guild.winRate >= 80 ? (
-                    <span className="text-red-500 font-bold">{guild.winRate}%</span>
+                    <span className="text-rose-400 font-bold">{guild.winRate}%</span>
                   ) : guild.winRate >= 70 ? (
-                    <span className="text-blue-400 font-semibold">{guild.winRate}%</span>
+                    <span className="text-yellow-300 font-semibold">{guild.winRate}%</span>
                   ) : (
                     <span className="text-shadow-black">{guild.winRate}%</span>
                   )}

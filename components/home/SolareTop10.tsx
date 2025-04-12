@@ -1,24 +1,88 @@
-'use client'
+import Image from "next/image"
+import Link from "next/link"
+import { getSolareTop10 } from "@/lib/queries/solare-league"
 
-export default function SolareTop10() {
+interface Entry {
+  name: string
+  class: string
+  subclass: string
+  wins: number
+  draws: number
+  losses: number
+  score: number
+  rank: number
+  rankChange?: string
+  tier: string
+}
+
+export default async function SolareTop10() {
+  const entries = await getSolareTop10()
+
+  const getRankChangeStyle = (change: string) => {
+    if (change.startsWith("▲")) return "text-red-400"
+    if (change.startsWith("▼")) return "text-blue-400"
+    if (change === "NEW") return "text-green-500"
+    return "text-gray-400"
+  }
+
   return (
-    <div className="bg-zinc-800 rounded-lg shadow border border-zinc-700">
-      <div className="text-center text-lg font-semibold py-3 border-b border-zinc-700">
-        🌟 솔라레 랭킹 TOP 10
+    <div className="bg-zinc-800 rounded-xl border border-zinc-700 shadow px-4 py-5 w-full max-w-[540px]">
+      <div className="flex flex-col items-center mb-4">
+        <h2 className="text-lg font-semibold text-center">🌟 솔라레 TOP 10</h2>
+        <Link
+          href="/solare-league"
+          className="self-end text-sm text-white hover:underline mt-1"
+        >
+          랭킹 바로가기
+        </Link>
       </div>
-      <div className="p-4 text-gray-300 text-sm">
-        {/* 추후 크롤링된 데이터로 교체 가능 */}
-        <p>1위 - 솔라레킹</p>
-        <p>2위 - 검투사짱</p>
-        <p>3위 - 미스틱마스터</p>
-        <p>4위 - 레인저갓</p>
-        <p>5위 - 암살의전설</p>
-        <p>6위 - 수라킹</p>
-        <p>7위 - 모험가짱</p>
-        <p>8위 - 아처짱</p>
-        <p>9위 - 팔라딘</p>
-        <p>10위 - 거너짱</p>
-      </div>
+
+      <table className="w-full text-sm table-auto">
+        <thead>
+          <tr className="text-gray-300 text-center">
+            <th className="px-2 py-2">순위</th>
+            <th className="px-2 py-2">티어</th>
+            <th className="px-2 py-2">가문명</th>
+            <th className="px-2 py-2">클래스</th>
+            <th className="px-2 py-2">승률</th>
+            <th className="px-2 py-2">점수</th>
+          </tr>
+        </thead>
+        <tbody className="text-center text-white ">
+          {entries.map((e: Entry, i: number) => {
+            const total = e.wins + e.draws + e.losses
+            const winRate = total > 0 ? Math.round((e.wins / total) * 100) : 0
+            const rankChange = e.rankChange ?? "-"
+            const changeColor = getRankChangeStyle(rankChange)
+
+            return (
+              <tr key={`${e.name}-${e.rank}`} className="h-[42px] border-b border-gray-500">
+                <td className="px-2 py-2">
+                  <div className="flex items-center justify-center gap-1">
+                    <span className="w-6 text-right">{e.rank}</span>
+                    <span className={`w-6 text-left text-xs ${changeColor}`}>{rankChange}</span>
+                  </div>
+                </td>
+
+                <td className="px-2 py-1">
+                  <Image
+                    src={`/solare-icons/${e.tier}.png`}
+                    alt="티어"
+                    width={26}
+                    height={26}
+                    className="mx-auto"
+                  />
+                </td>
+
+                <td className="px-2 py-1 whitespace-nowrap text-white-300">{e.name}</td>
+                <td className="px-2 py-1 whitespace-nowrap">{e.class}</td>
+                <td className="px-2 py-1 whitespace-nowrap">{winRate}%</td>
+                <td className="px-2 py-1 whitespace-nowrap">{e.score}</td>
+              </tr>
+            )
+          })}
+        </tbody>
+      </table>
     </div>
   )
 }

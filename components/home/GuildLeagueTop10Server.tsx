@@ -12,14 +12,22 @@ export default async function GuildLeagueTop10Server() {
 
   return (
     <div className="bg-zinc-800 rounded-xl border border-zinc-700 shadow px-4 py-5 w-full max-w-[540px]">
-      <h2 className="text-center text-lg font-semibold mb-4">🏆 길드 리그 TOP 10</h2>
+      <div className="flex flex-col items-center mb-4">
+        <h2 className="text-lg font-semibold text-center">🏆 길드 리그 TOP 10</h2>
+        <Link
+          href="/guild-league"
+          className="self-end text-sm text-white hover:underline mt-1"
+        >
+          랭킹 바로가기
+        </Link>
+      </div>
 
       <table className="w-full text-sm table-auto">
         <thead>
-          <tr className="text-gray-300 text-center">
+          <tr className="text-white text-center">
             <th className="px-2 py-2">순위</th>
             <th className="px-2 py-2">길드명</th>
-            <th className="px-2 py-2">승/패</th>
+            <th className="px-2 py-2">승 / 패</th>
             <th className="px-2 py-2">승률</th>
             <th className="px-2 py-2">점수</th>
           </tr>
@@ -32,7 +40,7 @@ export default async function GuildLeagueTop10Server() {
             const changeColor = getRankChangeStyle(rankChange)
 
             return (
-              <tr key={g.guild_name} className="h-[42px]">
+              <tr key={g.guild_name} className="h-[42px] border-b border-gray-500">
                 <td className="px-2 py-2">
                   <div className="flex items-center justify-center gap-1">
                     <span className="w-6 text-right">{i + 1}</span>
