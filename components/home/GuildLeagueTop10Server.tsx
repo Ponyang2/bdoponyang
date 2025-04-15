@@ -13,7 +13,7 @@ export default async function GuildLeagueTop10Server() {
   return (
     <div className="bg-zinc-800 rounded-xl border border-zinc-700 shadow px-4 py-5 w-full max-w-[540px]">
       <div className="flex flex-col items-center mb-4">
-        <h2 className="text-lg font-semibold text-center">🏆 길드 리그 TOP 10</h2>
+        <h2 className="text-xl font-semibold text-center">🏆 길드 리그 TOP 10</h2>
         <Link
           href="/guild-league"
           className="self-end text-sm text-white hover:underline mt-1"
@@ -22,9 +22,9 @@ export default async function GuildLeagueTop10Server() {
         </Link>
       </div>
 
-      <table className="w-full text-sm table-auto">
+      <table className="w-full text-sm border-gray-500 table-auto">
         <thead>
-          <tr className="text-white text-center">
+          <tr className="text-white text-center bg-gray-800 border-gray-700">
             <th className="px-2 py-2">순위</th>
             <th className="px-2 py-2">길드명</th>
             <th className="px-2 py-2">승 / 패</th>

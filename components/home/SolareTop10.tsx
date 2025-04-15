@@ -28,7 +28,7 @@ export default async function SolareTop10() {
   return (
     <div className="bg-zinc-800 rounded-xl border border-zinc-700 shadow px-4 py-5 w-full max-w-[540px]">
       <div className="flex flex-col items-center mb-4">
-        <h2 className="text-lg font-semibold text-center">🌟 솔라레 TOP 10</h2>
+        <h2 className="text-xl font-semibold text-center">🌟 솔라레의 창 TOP 10</h2>
         <Link
           href="/solare-league"
           className="self-end text-sm text-white hover:underline mt-1"
@@ -39,7 +39,7 @@ export default async function SolareTop10() {
 
       <table className="w-full text-sm table-auto">
         <thead>
-          <tr className="text-gray-300 text-center">
+          <tr className="text-gray-300 text-center bg-gray-800 border-gray-700">
             <th className="px-2 py-2">순위</th>
             <th className="px-2 py-2">티어</th>
             <th className="px-2 py-2">가문명</th>

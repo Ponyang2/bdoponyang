@@ -44,10 +44,16 @@ export default function Navbar() {
     <div className="w-full sticky top-0 z-50 bg-zinc-900">
       <div className="flex items-center justify-between max-w-7xl mx-auto px-6 py-3">
         {/* 로고 */}
-        <div className="flex items-center gap-2 shrink-0">
-          <Image src="/logo.png" alt="Logo" width={40} height={40} className="object-contain rounded" />
-          <span className="text-xl font-bold text-white">포냥이</span>
-        </div>
+        <a href="/" className="flex items-center gap-2 shrink-0">
+          <Image
+            src="/logo.png"
+            alt="Logo"
+            width={50}
+            height={40}
+            className="object-contain rounded"
+          />
+          <span className="text-2xl font-bold text-white">포냥이</span>
+        </a>
 
         {/* 검색창 */}
         <div className="relative flex-grow mx-8 max-w-2xl">
@@ -77,13 +83,13 @@ export default function Navbar() {
 
       {/* 메뉴바 */}
       <div className="bg-zinc-800 border-t border-zinc-700">
-        <div className="flex justify-between max-w-6xl mx-auto px-6 py-2 text-sm font-medium text-white">
+        <div className="flex justify-between max-w-6xl mx-auto px-6 py-2 text-base font-semibold text-white">
           <Link href="/" className="px-4 py-2 hover:text-yellow-400 hover:border-b-2 hover:border-yellow-400 transition-all duration-150">
             홈
           </Link>
-          <a className="px-4 py-2 hover:text-yellow-400 hover:border-b-2 hover:border-yellow-400 transition-all duration-150" href="#">
-            거점/점령
-          </a>
+          <Link href="/war-records" className="px-4 py-2 hover:text-yellow-400 hover:border-b-2 hover:border-yellow-400 transition-all duration-150">
+            거점/점령전
+          </Link>
           <Link href="/guild-league" className="px-4 py-2 hover:text-yellow-400 hover:border-b-2 hover:border-yellow-400 transition-all duration-150">
             길드 리그
           </Link>

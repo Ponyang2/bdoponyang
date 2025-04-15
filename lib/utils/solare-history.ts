@@ -14,21 +14,30 @@ interface ClassEntry {
   [key: string]: any
 }
 
-// ✅ 전체 랭킹 순위 변동 계산
+// ✅ 전체 랭킹 순위 변동 계산 (가장 최근 snapshot 기준)
 export async function getSolareOverallRankChanges(today: OverallEntry[]) {
-  const result = await db.query(`
-    SELECT name, class_rank
+  const latest = await db.query(`
+    SELECT snapshot_date
     FROM solare_overall_league_history
-    WHERE snapshot_date = CURRENT_DATE - INTERVAL '1 day'
+    ORDER BY snapshot_date DESC
+    LIMIT 1
   `)
 
-  const yesterdayMap = new Map<string, number>()
+  const latestDate = latest.rows[0]?.snapshot_date
+  if (!latestDate) return today.map(entry => ({ ...entry, rankChange: 'NEW' }))
+
+  const result = await db.query(
+    `SELECT name, class_rank FROM solare_overall_league_history WHERE snapshot_date = $1`,
+    [latestDate]
+  )
+
+  const prevMap = new Map<string, number>()
   result.rows.forEach((row: any) => {
-    yesterdayMap.set(row.name, row.class_rank)
+    prevMap.set(row.name, row.class_rank)
   })
 
   return today.map((entry) => {
-    const prevRank = yesterdayMap.get(entry.name)
+    const prevRank = prevMap.get(entry.name)
     let rankChange = '-'
     if (prevRank === undefined) {
       rankChange = 'NEW'
@@ -41,21 +50,31 @@ export async function getSolareOverallRankChanges(today: OverallEntry[]) {
   })
 }
 
-// ✅ 클래스별 랭킹 순위 변동 계산
+// ✅ 클래스별 랭킹 순위 변동 계산 (가장 최근 snapshot 기준)
 export async function getSolareClassRankChanges(today: ClassEntry[], className: string) {
-  const result = await db.query(`
-    SELECT name, class_rank
+  const latest = await db.query(`
+    SELECT snapshot_date
     FROM solare_class_league_history
-    WHERE snapshot_date = CURRENT_DATE - INTERVAL '1 day' AND class = $1
+    WHERE class = $1
+    ORDER BY snapshot_date DESC
+    LIMIT 1
   `, [className])
 
-  const yesterdayMap = new Map<string, number>()
+  const latestDate = latest.rows[0]?.snapshot_date
+  if (!latestDate) return today.map(entry => ({ ...entry, rankChange: 'NEW' }))
+
+  const result = await db.query(
+    `SELECT name, class_rank FROM solare_class_league_history WHERE snapshot_date = $1 AND class = $2`,
+    [latestDate, className]
+  )
+
+  const prevMap = new Map<string, number>()
   result.rows.forEach((row: any) => {
-    yesterdayMap.set(row.name, row.class_rank)
+    prevMap.set(row.name, row.class_rank)
   })
 
   return today.map((entry) => {
-    const prevRank = yesterdayMap.get(entry.name)
+    const prevRank = prevMap.get(entry.name)
     let rankChange = '-'
     if (prevRank === undefined) {
       rankChange = 'NEW'

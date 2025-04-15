@@ -21,8 +21,8 @@ export default function UpdateCard() {
   }, [])
 
   return (
-    <div className="bg-zinc-800 rounded-lg shadow p-4">
-      <h2 className="text-lg font-semibold mb-1">🛠️ 검은사막 업데이트</h2>
+    <div className="bg-zinc-800 rounded-lg text-center shadow p-1">
+      <h2 className="text-lg font-semibold mb-3">🛠️ 검은사막 업데이트</h2>
       <div className="border-b border-zinc-600 mb-3" />
       <ul className="space-y-1 list-disc pl-4 text-sm text-white">
         {updates.map((item, idx) => (
@@ -34,7 +34,7 @@ export default function UpdateCard() {
               className="flex items-center gap-2 hover:text-blue-400 hover:underline transition-all"
               title={item.title}
             >
-              <span className="font-mono text-zinc-300 shrink-0">
+              <span className="font-semibold text-zinc-300 shrink-0">
                 {formatDate(item.date)}
               </span>
               <span className="truncate font-semibold">{stripTitle(item.title)}</span>

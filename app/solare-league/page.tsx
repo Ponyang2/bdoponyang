@@ -50,7 +50,7 @@ export default function SolareOverallPage() {
       {/* 추가된 부분: 클래스 선택 버튼들 위에 업데이트 관련 표시 */}
       <div className="flex justify-between text-sm text-gray-400 mb-4">
         <span>⏰ 매일 오전 중에 업데이트 중입니다.</span>
-        <span>📅 {updateDate}</span>
+        <span>📅 2025-04-12</span>
       </div>
       <SolareTable data={data} />
     </div>
