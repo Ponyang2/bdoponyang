@@ -23,7 +23,7 @@ export default function SolareClassClient() {
   const className = decodeURIComponent(params?.class as string || '')
   const [data, setData] = useState<Entry[] | null>(null)
   const [error, setError] = useState(false)
-  // const [updateDate, setUpdateDate] = useState('')
+  const [updateDate, setUpdateDate] = useState('')
 
   useEffect(() => {
     if (!classList.includes(className)) {
@@ -39,7 +39,7 @@ export default function SolareClassClient() {
     // Fetch the update date (KST)
     const currentDate = new Date()
     const kstDate = new Date(currentDate.toLocaleString('en-US', { timeZone: 'Asia/Seoul' }))
-    //setUpdateDate(kstDate.toISOString().split('T')[0]) // YYYY-MM-DD 형식으로 표시
+    setUpdateDate(kstDate.toISOString().split('T')[0]) // YYYY-MM-DD 형식으로 표시
   }, [className])
 
   if (error) return <div className="p-4 max-w-5xl mx-auto">존재하지 않는 클래스입니다.</div>
@@ -57,7 +57,7 @@ export default function SolareClassClient() {
             {/* 추가된 부분: 클래스 선택 버튼들 위에 업데이트 관련 표시 */}
       <div className="flex justify-between text-sm text-gray-400 mb-4">
         <span>⏰ 매일 오전 중에 업데이트 중입니다.</span>
-        <span>📅 2025-04-12</span>
+        <span>📅 {updateDate}</span>
       </div>
       <SolareTable data={data} />
     </div>
