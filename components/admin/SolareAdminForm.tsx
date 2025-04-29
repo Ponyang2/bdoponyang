@@ -1,7 +1,5 @@
 'use client'
 
-import { getTier } from '@/lib/utils/tier'
-
 export interface Entry {
   name: string
   subclass: string
