@@ -44,7 +44,7 @@ export async function POST(req: NextRequest) {
     }
 
     // 클래스별 랭킹
-    for (const [cls, entries] of Object.entries(classData)) {
+    for (const [_, entries] of Object.entries(classData)) {
       for (let i = 0; i < entries.length; i++) {
         const entry = entries[i]
         await client.query(
