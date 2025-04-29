@@ -3,32 +3,33 @@
 import { db } from '@/lib/db'
 
 export async function getAllGuildLeague() {
-  const now = new Date()
-  const kst = new Date(now.getTime() + 9 * 60 * 60 * 1000)
-  const today = kst.toISOString().split('T')[0]
-
-  const yesterdayObj = new Date(kst)
-  yesterdayObj.setDate(yesterdayObj.getDate() - 1)
-  const yesterday = yesterdayObj.toISOString().split('T')[0]
-
-  const current = await db.query(`SELECT * FROM guild_league ORDER BY rank ASC`)
-
-  const history = await db.query(
-    `
-    SELECT guild_name, rank
+  // 최신 2일의 날짜 구하기
+  const datesRes = await db.query(`
+    SELECT DISTINCT snapshot_date
     FROM guild_league_history
-    WHERE snapshot_date >= $1::date AND snapshot_date < ($1::date + interval '1 day')
-    `,
-    [yesterday]
+    ORDER BY snapshot_date DESC
+    LIMIT 2
+  `)
+  const dates = datesRes.rows.map(r => r.snapshot_date).sort()
+  if (dates.length < 2) return []
+
+  // 두 날짜의 데이터 모두 가져오기
+  const [prevDate, latestDate] = dates
+  const prevRows = await db.query(
+    `SELECT guild_name, rank FROM guild_league_history WHERE snapshot_date = $1`,
+    [prevDate]
+  )
+  const latestRows = await db.query(
+    `SELECT *, snapshot_date FROM guild_league_history WHERE snapshot_date = $1 ORDER BY rank ASC`,
+    [latestDate]
   )
 
   const prevMap = new Map<string, number>()
-  for (const row of history.rows) {
-    const name = row.guild_name.trim().normalize('NFC')
-    prevMap.set(name, row.rank)
+  for (const row of prevRows.rows) {
+    prevMap.set(row.guild_name.trim().normalize('NFC'), row.rank)
   }
 
-  const withDiff = current.rows.map((row) => {
+  return latestRows.rows.map((row) => {
     const name = row.guild_name.trim().normalize('NFC')
     const prevRank = prevMap.get(name)
     let diff: string | null = null
@@ -47,6 +48,4 @@ export async function getAllGuildLeague() {
       rank_diff: diff,
     }
   })
-
-  return withDiff
 }

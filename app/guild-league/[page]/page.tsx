@@ -16,6 +16,7 @@ interface Guild {
   rank: number
   updated_at: Date
   rankChange?: string
+  snapshot_date: Date
 }
 
 export default async function GuildLeaguePage() {
@@ -32,12 +33,17 @@ export default async function GuildLeaguePage() {
     score: guild.score,
     rank: guild.rank,
     updated_at: guild.updated_at,
+    snapshot_date: guild.snapshot_date,
   }))
 
   const guilds = await getRankChanges(data)
 
   const updatedAt =
-    data.length > 0 ? new Date(data[0].updated_at).toISOString().split("T")[0] : ""
+    data.length > 0 && data[0].snapshot_date
+      ? new Date(new Date(data[0].snapshot_date).getTime() + 9 * 60 * 60 * 1000)
+          .toISOString()
+          .split("T")[0]
+      : ""
 
   const rankStyles = [
     "bg-gradient-to-r from-yellow-500 to-black-700 text-white", // 1위
