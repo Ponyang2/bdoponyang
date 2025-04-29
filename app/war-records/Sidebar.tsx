@@ -14,14 +14,18 @@ export default function Sidebar() {
 
   return (
     <aside className="p-5 w-48 space-y-2">
-      <h2 className="text-lg font-semibold mb-4">📋 거점/점령전</h2>
+      <h2 className="text-lg font-semibold mb-4 text-white">
+        <span>📋</span> 거점/점령전
+      </h2>
       {navItems.map(({ href, label }) => (
         <Link
           key={href}
           href={href}
           className={cn(
-            'block px-4 py-2 rounded-md hover:bg-muted transition-all',
-            pathname === href ? 'bg-primary text-white' : 'text-muted-foreground'
+            'block px-4 py-2 rounded-md transition-all',
+            pathname === href 
+              ? 'bg-gradient-to-r from-blue-600/80 to-cyan-600/80 text-white shadow-md' 
+              : 'text-gray-300 hover:bg-slate-800/50 hover:text-white'
           )}
         >
           {label}

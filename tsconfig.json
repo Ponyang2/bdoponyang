@@ -1,11 +1,7 @@
 {
   "compilerOptions": {
-    "target": "ES6",
-    "lib": [
-      "DOM",
-      "DOM.Iterable",
-      "ESNext"
-    ],
+    "target": "ESNext",
+    "lib": ["DOM", "DOM.Iterable", "ESNext"],
     "allowJs": true,
     "skipLibCheck": true,
     "strict": true,
@@ -18,15 +14,12 @@
     "isolatedModules": true,
     "jsx": "preserve",
     "incremental": true,
-
-    // ✅ 기준 경로: 프로젝트 루트 (.)
+    "noUnusedLocals": true,
+    "noUnusedParameters": true,
     "baseUrl": ".",
-
-    // ✅ '@/lib', '@/components', '@/actions' 등 전부 사용 가능
     "paths": {
       "@/*": ["./*"]
     },
-
     "plugins": [
       {
         "name": "next"
@@ -34,10 +27,10 @@
     ]
   },
   "include": [
-    "app",           // App Router 폴더
-    "lib",           // DB, 유틸, 랭킹 등
-    "components",    // UI 컴포넌트
-    "actions",       // 서버 액션
+    "app",
+    "lib",
+    "components",
+    "actions",
     "**/*.ts",
     "**/*.tsx",
     "next-env.d.ts",

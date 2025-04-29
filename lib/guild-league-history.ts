@@ -12,34 +12,39 @@ export interface Guild {
   rankChange?: string
 }
 
-// ✅ 최신 두 개 snapshot 중 직전 snapshot rank map 가져오기
-async function getLastSnapshotRankMap(): Promise<Record<string, number>> {
+// ✅ 최신 두 개 snapshot의 rank map 모두 가져오기
+async function getLatestTwoSnapshotRankMaps(): Promise<{ latest: Record<string, number>, prev: Record<string, number> }> {
   const result = await db.query(`
-    SELECT guild_name, rank
-    FROM guild_league_history
-    WHERE snapshot_date = (
-      SELECT snapshot_date
+    WITH ordered_dates AS (
+      SELECT DISTINCT snapshot_date
       FROM guild_league_history
-      GROUP BY snapshot_date
       ORDER BY snapshot_date DESC
-      OFFSET 1 LIMIT 1
+      LIMIT 2
     )
+    SELECT guild_name, rank, snapshot_date
+    FROM guild_league_history
+    WHERE snapshot_date IN (SELECT snapshot_date FROM ordered_dates)
   `)
 
-  const map: Record<string, number> = {}
+  // 날짜별로 분리
+  const dateMap: Record<string, Record<string, number>> = {}
   result.rows.forEach((row) => {
-    map[row.guild_name] = row.rank
+    if (!dateMap[row.snapshot_date]) dateMap[row.snapshot_date] = {}
+    dateMap[row.snapshot_date][row.guild_name] = row.rank
   })
-
-  return map
+  const dates = Object.keys(dateMap).sort() // 오름차순: [이전, 최신]
+  return {
+    prev: dateMap[dates[0]] || {},
+    latest: dateMap[dates[1]] || {},
+  }
 }
 
 // ✅ 오늘의 길드 리스트에 순위 변동 정보 추가 (▲, ▼, NEW)
 export async function getRankChanges(todayGuilds: Guild[]) {
-  const previousRanks = await getLastSnapshotRankMap()
+  const { prev } = await getLatestTwoSnapshotRankMaps()
 
   return todayGuilds.map((guild) => {
-    const prevRank = previousRanks[guild.name]
+    const prevRank = prev[guild.name]
     let rankChange = "-"
 
     if (prevRank === undefined) {

@@ -41,6 +41,8 @@ interface AllianceRow {
   tiers: string[]
 }
 
+const TIER_ORDER = { '무제한': 0, '2단': 1, '1단': 2 }
+
 export default function AdminWarRecordsPage() {
   const [selectedWarType, setSelectedWarType] = useState<WarType>('거점전')
   const [selectedRegion, setSelectedRegion] = useState(NODE_REGIONS[0])
@@ -271,7 +273,11 @@ export default function AdminWarRecordsPage() {
             </tr>
           </thead>
           <tbody>
-            {alliances.map((a, idx) => (
+            {[...alliances].sort((a, b) => {
+              const aTier = Math.min(...(a.tiers.map(t => TIER_ORDER[t as keyof typeof TIER_ORDER] ?? 99)), 99)
+              const bTier = Math.min(...(b.tiers.map(t => TIER_ORDER[t as keyof typeof TIER_ORDER] ?? 99)), 99)
+              return aTier - bTier
+            }).map((a, idx) => (
               <tr key={idx}>
                 <td className="border px-2 py-1 text-white font-bold">
                   <Input value={a.name} onChange={(e) => updateAlliance(idx, 'name', e.target.value)} />

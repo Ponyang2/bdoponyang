@@ -52,27 +52,26 @@ export default async function GuildLeaguePage() {
   }
 
   return (
-    <Card className="p-4 max-w-screen-xl mx-auto mt-4">
-      <div className="flex flex-col items-center justify-center mb-4">
-        <div className="flex items-center gap-2 text-3xl font-bold text-white">
-          <Trophy className="w-6 h-6 fill-yellow-400 text-yellow-400" />
+    <Card className="p-6 max-w-screen-xl mx-auto mt-6">
+      <div className="bg-gradient-to-r from-slate-800/50 to-blue-900/50 p-6 rounded-2xl shadow-lg flex items-center justify-center mb-2">
+        <h2 className="text-4xl text-center font-bold text-white flex items-center gap-2 m-0">
+          <Trophy className="w-8 h-8 fill-yellow-400 text-yellow-400" />
           <span>길드 리그 - 정규 시즌 순위</span>
-          <Trophy className="w-6 h-6 fill-yellow-400 text-yellow-400" />
-        </div>
-        <div className="flex justify-between w-full text-sm text-white-400 mt-1 px-1">
-          <span>⏰ 매일 오전 중에 업데이트 중입니다.</span>
-          <span>📅 {updatedAt}</span>
-        </div>
+        </h2>
+      </div>
+      <div className="flex justify-between w-full text-sm text-white mt-2 px-2 mb-4">
+        <span>⏰ 매일 오전 중에 업데이트 중입니다.</span>
+        <span>📅 {updatedAt}</span>
       </div>
 
-      <table className="w-full text-xl text-center">
+      <table className="w-full text-lg text-center">
         <thead>
           <tr className="border-0 bg-gray-800 border-gray-700 text-white-300">
-            <th className="p-2">순위</th>
-            <th className="p-2">길드명</th>
-            <th className="p-2">승/패</th>
-            <th className="p-2">승률</th>
-            <th className="p-2">점수</th>
+            <th className="py-3 px-2 text-xl">순위</th>
+            <th className="py-3 px-2 text-xl">길드명</th>
+            <th className="py-3 px-2 text-xl">승/패</th>
+            <th className="py-3 px-2 text-xl">승률</th>
+            <th className="py-3 px-2 text-xl">점수</th>
           </tr>
         </thead>
         <tbody>
@@ -85,23 +84,21 @@ export default async function GuildLeaguePage() {
                 key={guild.name}
                 className={`border-b border-gray-700 text-white ${
                   guild.rank <= 3 ? rankStyles[guild.rank - 1] : ""
-                }`}
+                } text-lg`}
               >
-                <td className="p-2 font-semibold flex items-center justify-center gap-1">
+                <td className="py-3 px-2 font-semibold flex items-center justify-center gap-1">
                   <span className="w-6 text-right">{guild.rank}</span>
-                  <span className={`w-6 text-left text-xs ${changeColor}`}>
-                    {rankChange}
-                  </span>
+                  <span className={`w-6 text-left text-xs ${changeColor}`}>{rankChange}</span>
                 </td>
-                <td className="p-2 font-semibold text-white-300 hover:text-blue-400">
-                 <Link href={`/guild/${encodeURIComponent(guild.name)}`}>
+                <td className="py-3 px-2 font-semibold text-white-300 hover:text-blue-400">
+                  <Link href={`/guild/${encodeURIComponent(guild.name)}`}>
                     {guild.name}
                   </Link>
                 </td>
-                <td className="p-2 font-normal">
+                <td className="py-3 px-2 font-normal">
                   {guild.wins}승 / {guild.losses}패
                 </td>
-                <td className="p-2 font-semibold">
+                <td className="py-3 px-2 font-semibold">
                   {guild.winRate >= 80 ? (
                     <span className="text-rose-400 font-bold">{guild.winRate}%</span>
                   ) : guild.winRate >= 70 ? (
@@ -110,7 +107,7 @@ export default async function GuildLeaguePage() {
                     <span className="text-shadow-black">{guild.winRate}%</span>
                   )}
                 </td>
-                <td className="p-2 font-semibold">{guild.score}</td>
+                <td className="py-3 px-2 font-semibold">{guild.score}</td>
               </tr>
             )
           })}
