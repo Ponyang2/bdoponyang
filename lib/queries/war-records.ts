@@ -23,6 +23,7 @@ export async function getWeeklyWarRanking() {
     client.release()
   }
 }
+
 export async function getMonthlyWarRanking() {
   const client = await db.connect()
   try {

@@ -2,7 +2,6 @@
 export const dynamic = 'force-dynamic'
 
 import { getAllGuildLeague } from "@/actions/guild-league/get-all"
-import { getRankChanges } from "lib/guild-league-history"
 import { Card } from "@/components/card"
 import { Trophy } from "lucide-react"
 import Link from "next/link"
@@ -34,9 +33,10 @@ export default async function GuildLeaguePage() {
     rank: guild.rank,
     updated_at: guild.updated_at,
     snapshot_date: guild.snapshot_date,
+    rankChange: guild.rank_diff,
   }))
 
-  const guilds = await getRankChanges(data)
+  const guilds = data
 
   const updatedAt =
     data.length > 0 && data[0].snapshot_date

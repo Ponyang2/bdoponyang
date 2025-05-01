@@ -17,13 +17,21 @@ export async function POST(req: Request) {
     // ✅ alliance_guilds는 전체 삭제
     await client.query('DELETE FROM alliance_guilds')
 
-    // ✅ 사용되지 않는 연맹만 삭제
-    await client.query(`
-      DELETE FROM alliances
-      WHERE id NOT IN (
-        SELECT DISTINCT alliance_id FROM war_records WHERE alliance_id IS NOT NULL
+    // 현재 저장하려는 연맹 이름 목록
+    const allianceNames = alliances
+      .map(a => a.name?.trim())
+      .filter(Boolean)
+
+    // 목록에 없는 연맹 삭제
+    if (allianceNames.length > 0) {
+      await client.query(
+        `DELETE FROM alliances WHERE name != ALL($1)`,
+        [allianceNames]
       )
-    `)
+    } else {
+      // 모든 연맹 삭제
+      await client.query('DELETE FROM alliances')
+    }
 
     for (const a of alliances) {
       const name = a.name?.trim()
@@ -32,7 +40,7 @@ export async function POST(req: Request) {
 
       if (!name || guilds.length === 0) continue
 
-      // 이미 존재하는 경우 ID 가져오기 (삭제되지 않은 경우)
+      // 이미 존재하는 경우 ID 가져오기
       const existing = await client.query(`SELECT id FROM alliances WHERE name = $1`, [name])
       let allianceId: number
 
@@ -47,6 +55,9 @@ export async function POST(req: Request) {
         )
         allianceId = result.rows[0].id
       }
+
+      // 기존 길드 목록 삭제
+      await client.query(`DELETE FROM alliance_guilds WHERE alliance_id = $1`, [allianceId])
 
       for (const guild of guilds) {
         const clean = guild.trim()
@@ -63,7 +74,7 @@ export async function POST(req: Request) {
     return NextResponse.json({ success: true })
   } catch (err) {
     await client.query('ROLLBACK')
-    console.error('[SAVE ALLIANCES ERROR]', err)
+    console.error('[SAVE ALLIANCES ERROR]', JSON.stringify(err, null, 2))
     return NextResponse.json({ error: 'DB error', detail: String(err) }, { status: 500 })
   } finally {
     client.release()
