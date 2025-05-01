@@ -3,6 +3,8 @@ import { Geist, Geist_Mono } from "next/font/google";
 import "./globals.css";
 // app/layout.tsx에서 아래처럼 고쳐줘
 import Navbar from "@/components/Navbar"
+import { createIndexes } from '@/lib/db'
+import { Providers } from './providers'
 
 
 const geistSans = Geist({
@@ -22,16 +24,23 @@ export const metadata: Metadata = {
 
 export default function RootLayout({
   children,
-}: Readonly<{
-  children: React.ReactNode;
-}>) {
+}: {
+  children: React.ReactNode
+}) {
+  // 앱 시작 시 인덱스 생성
+  if (typeof window === 'undefined') {
+    createIndexes().catch(console.error)
+  }
+
   return (
     <html lang="ko">
       <body className={`${geistSans.variable} ${geistMono.variable} antialiased bg-black text-white`}>
-        <Navbar />
-        <main className="min-h-screen">
-          {children}
-        </main>
+        <Providers>
+          <Navbar />
+          <main className="min-h-screen">
+            {children}
+          </main>
+        </Providers>
       </body>
     </html>
   );

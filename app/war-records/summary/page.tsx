@@ -1,18 +1,19 @@
 'use client'
 
-import { useEffect, useState, Fragment } from 'react'
+import { useState, Fragment, useCallback, useMemo } from 'react'
 import PeriodSelector from '@/components/war-records/PeriodSelector'
+import { useQuery } from '@tanstack/react-query'
 
-interface RankingEntry {
-  alliance_name: string
-  count: number
-  participated?: number
-}
-
-interface AllianceEntry {
+interface AllianceData {
   alliance_name: string
   guilds: string[]
   tiers: string[]
+}
+
+interface WarSummaryData {
+  alliance_name: string
+  count: number
+  participated: number
 }
 
 interface RelatedAlliance {
@@ -22,35 +23,49 @@ interface RelatedAlliance {
   participated: number
 }
 
+async function fetchWarSummary(period: string, tier: string): Promise<WarSummaryData[]> {
+  const res = await fetch(`/api/war-records/summary?period=${period}&tier=${tier}`)
+  if (!res.ok) throw new Error('Failed to fetch war summary')
+  return res.json()
+}
+
+async function fetchAlliances(): Promise<AllianceData[]> {
+  const res = await fetch('/api/war-records/alliances')
+  if (!res.ok) throw new Error('Failed to fetch alliances')
+  return res.json()
+}
+
 export default function WarSummaryPage() {
   const [selectedTab, setSelectedTab] = useState<'weekly' | 'monthly' | 'yearly'>('weekly')
-  const [rankingByTier, setRankingByTier] = useState<Record<'무제한' | '2단' | '1단', RankingEntry[]>>({
-    무제한: [], '2단': [], '1단': []
-  })
-  const [alliances, setAlliances] = useState<AllianceEntry[]>([])
   const [expandedAlliances, setExpandedAlliances] = useState<Record<string, RelatedAlliance[] | undefined>>({})
 
-  useEffect(() => {
-    const load = async () => {
-      const endpointBase = `/api/war-records/summary?period=${selectedTab}`
+  const { data: rankingByTier = { '무제한': [], '2단': [], '1단': [] } } = useQuery({
+    queryKey: ['war-summary', selectedTab],
+    queryFn: async () => {
       const tiers: ('무제한' | '2단' | '1단')[] = ['무제한', '2단', '1단']
       const results = await Promise.all(
-        tiers.map(tier =>
-          fetch(`${endpointBase}&tier=${tier}`).then(res => res.json())
-        )
+        tiers.map(tier => fetchWarSummary(selectedTab, tier))
       )
-      setRankingByTier({ '무제한': results[0], '2단': results[1], '1단': results[2] })
-    }
-    load()
-  }, [selectedTab])
+      return { '무제한': results[0], '2단': results[1], '1단': results[2] }
+    },
+    staleTime: 5 * 60 * 1000, // 5분
+    gcTime: 10 * 60 * 1000, // 10분
+    refetchOnWindowFocus: false,
+    refetchOnReconnect: false,
+    retry: 1,
+  })
 
-  useEffect(() => {
-    fetch('/api/war-records/alliances')
-      .then(res => res.json())
-      .then(data => setAlliances(data ?? []))
-  }, [])
+  const { data: alliances = [] } = useQuery({
+    queryKey: ['alliances'],
+    queryFn: fetchAlliances,
+    staleTime: 5 * 60 * 1000, // 5분
+    gcTime: 10 * 60 * 1000, // 10분
+    refetchOnWindowFocus: false,
+    refetchOnReconnect: false,
+    retry: 1,
+  })
 
-  const toggleExpanded = async (name: string) => {
+  const toggleExpanded = useCallback(async (name: string) => {
     if (expandedAlliances[name]) {
       setExpandedAlliances(prev => ({ ...prev, [name]: undefined }))
     } else {
@@ -58,16 +73,19 @@ export default function WarSummaryPage() {
       const data = await res.json()
       setExpandedAlliances(prev => ({ ...prev, [name]: data }))
     }
-  }
+  }, [expandedAlliances])
 
-  const renderTableByTier = (tier: '무제한' | '2단' | '1단') => {
-    const filtered = alliances
-      .filter((a) => a.tiers.includes(tier))
-      .sort((a, b) => {
-        const aCount = rankingByTier[tier].find(r => r.alliance_name === a.alliance_name)?.count ?? 0
-        const bCount = rankingByTier[tier].find(r => r.alliance_name === b.alliance_name)?.count ?? 0
-        return bCount - aCount
-      })
+  const renderTableByTier = useCallback((tier: '무제한' | '2단' | '1단') => {
+    const filtered = useMemo(() => 
+      alliances
+        .filter((a: AllianceData) => a.tiers.includes(tier))
+        .sort((a: AllianceData, b: AllianceData) => {
+          const aCount = rankingByTier[tier].find((r: WarSummaryData) => r.alliance_name === a.alliance_name)?.count ?? 0
+          const bCount = rankingByTier[tier].find((r: WarSummaryData) => r.alliance_name === b.alliance_name)?.count ?? 0
+          return bCount - aCount
+        }),
+      [alliances, rankingByTier, tier]
+    )
 
     return (
       <section key={tier} className="transform transition-all hover:scale-[1.01]">
@@ -86,8 +104,8 @@ export default function WarSummaryPage() {
               </tr>
             </thead>
             <tbody>
-              {filtered.map((a) => {
-                const main = rankingByTier[tier].find(r => r.alliance_name === a.alliance_name)
+              {filtered.map((a: AllianceData) => {
+                const main = rankingByTier[tier].find((r: WarSummaryData) => r.alliance_name === a.alliance_name)
                 const occupied = main?.count ?? 0
                 const participated = main?.participated ?? occupied
                 const winRate = participated > 0 ? Math.round((occupied / participated) * 100) : 0
@@ -141,7 +159,7 @@ export default function WarSummaryPage() {
         </div>
       </section>
     )
-  }
+  }, [alliances, rankingByTier, expandedAlliances, toggleExpanded])
 
   return (
     <div className="p-6 max-w-screen-xl mx-auto mt-4">

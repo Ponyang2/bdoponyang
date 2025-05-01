@@ -2,70 +2,47 @@
 
 import { db } from '@/lib/db'
 import { NextResponse } from 'next/server'
-import { REGION_TIERS } from '@/lib/constants/war-tiers'
+
+export const revalidate = 300 // 5분 캐시
 
 export async function GET(req: Request) {
   const { searchParams } = new URL(req.url)
-  const tierFilter = searchParams.get('tier') // '1단' | '2단' | '무제한' | null
+  const tierFilter = searchParams.get('tier')
 
   const client = await db.connect()
   try {
+    // 필요한 필드만 선택하고 JOIN 최적화
     const allRecords = await client.query(`
-      SELECT
-        a.name AS alliance_name,
-        a.tiers AS tiers,
-        w.id AS war_id,
-        w.region,
-        w.result,
-        ag.guild_name AS guild_name
-      FROM war_records w
-      JOIN alliances a ON w.alliance_id = a.id
-      LEFT JOIN alliance_guilds ag ON ag.alliance_id = a.id
-    `)
+      WITH recent_wars AS (
+        SELECT id, alliance_id, region, result
+        FROM war_records
+        WHERE war_date >= CURRENT_DATE - INTERVAL '7 days'
+        ${tierFilter ? `AND region = $1` : ''}
+        ORDER BY war_date DESC, id ASC
+      ),
+      alliance_stats AS (
+        SELECT 
+          a.name AS alliance_name,
+          COUNT(DISTINCT w.id) AS participated,
+          COUNT(DISTINCT CASE WHEN w.result = '점령성공' THEN w.id END) AS count
+        FROM recent_wars w
+        JOIN alliances a ON w.alliance_id = a.id
+        GROUP BY a.name
+      )
+      SELECT 
+        alliance_name,
+        participated,
+        count
+      FROM alliance_stats
+      ORDER BY count DESC, participated DESC
+    `, tierFilter ? [tierFilter] : [])
 
-    const grouped = new Map<string, {
-      alliance_name: string
-      guilds: Set<string>
-      tiers: Set<string>
-      count: Set<number>
-      participated: Set<number>
-    }>()
-
-    for (const row of allRecords.rows) {
-      const regionTier = REGION_TIERS[row.region as keyof typeof REGION_TIERS]
-      if (tierFilter && regionTier !== tierFilter) continue
-
-      const key = row.alliance_name
-      if (!grouped.has(key)) {
-        grouped.set(key, {
-          alliance_name: row.alliance_name,
-          guilds: new Set<string>(),
-          tiers: new Set<string>(),
-          count: new Set<number>(),
-          participated: new Set<number>(),
-        })
-      }
-
-      const data = grouped.get(key)!
-      if (row.guild_name) data.guilds.add(row.guild_name)
-      if (regionTier) data.tiers.add(regionTier)
-
-      data.participated.add(row.war_id)
-      if (row.result === '점령성공') data.count.add(row.war_id)
-    }
-
-    const result = Array.from(grouped.values()).map((r) => ({
-      alliance_name: r.alliance_name,
-      guilds: Array.from(r.guilds),
-      tiers: Array.from(r.tiers),
-      count: r.count.size,
-      participated: r.participated.size,
-    }))
-
-    return NextResponse.json(result)
+    const response = NextResponse.json(allRecords.rows)
+    response.headers.set('Cache-Control', 'public, max-age=300, stale-while-revalidate=60')
+    return response
   } catch (err) {
-    console.error('[WAR SUMMARY ERROR]', err)
-    return NextResponse.json({ error: 'DB Error' }, { status: 500 })
+    console.error('DB Error:', err)
+    return NextResponse.json({ error: 'Database error' }, { status: 500 })
   } finally {
     client.release()
   }
