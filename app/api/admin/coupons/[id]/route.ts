@@ -1,15 +1,9 @@
 import { NextResponse } from 'next/server'
 import { db } from '@/lib/db'
 
-type Props = {
-  params: {
-    id: string
-  }
-}
-
 export async function DELETE(
-  _: Request,
-  context: Props
+  request: Request,
+  { params }: { params: { id: string } }
 ) {
   try {
     const client = await db.connect()
@@ -20,7 +14,7 @@ export async function DELETE(
         DELETE FROM coupons
         WHERE id = $1
         `,
-        [context.params.id]
+        [params.id]
       )
 
       return NextResponse.json({ success: true })
