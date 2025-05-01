@@ -1,10 +1,14 @@
-import { type NextRequest, NextResponse } from 'next/server'
+import { NextRequest, NextResponse } from 'next/server'
 import { db } from '@/lib/db'
 
-export async function DELETE(
-  _request: NextRequest,
-  { params }: { params: { id: string } }
-) {
+export async function DELETE(req: NextRequest) {
+  const url = new URL(req.url)
+  const id = url.pathname.split('/').pop()
+
+  if (!id) {
+    return new NextResponse('Invalid ID', { status: 400 })
+  }
+
   try {
     const client = await db.connect()
     
@@ -14,7 +18,7 @@ export async function DELETE(
         DELETE FROM coupons
         WHERE id = $1
         `,
-        [params.id]
+        [id]
       )
 
       return NextResponse.json({ success: true })
