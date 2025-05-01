@@ -1,5 +1,7 @@
 'use client'
 
+export const dynamic = 'force-dynamic'
+
 import { useState, Fragment, useCallback, useMemo } from 'react'
 import PeriodSelector from '@/components/war-records/PeriodSelector'
 import { useQuery } from '@tanstack/react-query'

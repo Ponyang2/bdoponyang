@@ -1,8 +1,12 @@
 'use server'
 
 import { db } from '@/lib/db'
+import { revalidatePath } from 'next/cache'
 
 export async function getAllGuildLeague() {
+  // 캐시 비활성화
+  revalidatePath('/guild-league')
+
   // 최신 날짜 구하기
   const latestDateRes = await db.query(`
     SELECT DISTINCT snapshot_date

@@ -1,3 +1,6 @@
+export const dynamic = 'force-dynamic'
+export const revalidate = 0
+
 import type { Metadata } from "next";
 import { Geist, Geist_Mono } from "next/font/google";
 import "./globals.css";
@@ -18,8 +21,8 @@ const geistMono = Geist_Mono({
 });
 
 export const metadata: Metadata = {
-  title: "포냥이",
-  description: "검은사막 전적 검색 플랫폼",
+  title: "BDOPonyang",
+  description: "BDOPonyang",
 };
 
 export default function RootLayout({
