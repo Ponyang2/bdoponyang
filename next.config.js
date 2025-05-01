@@ -11,8 +11,8 @@ const nextConfig = {
   experimental: {
     optimizeCss: true,
     optimizePackageImports: ['@tanstack/react-query'],
-    serverComponentsExternalPackages: ['pg', 'pg-native'],
   },
+  serverExternalPackages: ['pg', 'pg-native'],
   compiler: {
     removeConsole: process.env.NODE_ENV === 'production',
   },
