@@ -49,7 +49,7 @@ export default async function SolareTop10() {
           </tr>
         </thead>
         <tbody className="text-center text-white ">
-          {entries.map((e: Entry, i: number) => {
+          {entries.map((e: Entry) => {
             const total = e.wins + e.draws + e.losses
             const winRate = total > 0 ? Math.round((e.wins / total) * 100) : 0
             const rankChange = e.rankChange ?? "-"

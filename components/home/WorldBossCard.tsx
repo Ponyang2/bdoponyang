@@ -13,10 +13,8 @@ interface ScheduleEntry {
 const DAY_INDEX = ['일', '월', '화', '수', '목', '금', '토']
 
 export default function WorldBossCard() {
-  const [schedule, setSchedule] = useState<ScheduleEntry[]>([])
   const [visibleSchedule, setVisibleSchedule] = useState<ScheduleEntry[]>([])
   const [index, setIndex] = useState(0)
-  const [now, setNow] = useState(new Date())
   const [showSchedule, setShowSchedule] = useState(false)
 
   useEffect(() => {
@@ -57,15 +55,9 @@ export default function WorldBossCard() {
           return getTimestamp(a) - getTimestamp(b)
         })
 
-        setSchedule(data)
         setVisibleSchedule(sorted)
         setIndex(0)
       })
-  }, [])
-
-  useEffect(() => {
-    const interval = setInterval(() => setNow(new Date()), 1000)
-    return () => clearInterval(interval)
   }, [])
 
   if (!visibleSchedule.length) return null
