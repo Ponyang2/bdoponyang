@@ -1,8 +1,8 @@
-import { NextResponse } from 'next/server'
+import { type NextRequest, NextResponse } from 'next/server'
 import { db } from '@/lib/db'
 
 export async function DELETE(
-  request: Request,
+  _request: NextRequest,
   { params }: { params: { id: string } }
 ) {
   try {
