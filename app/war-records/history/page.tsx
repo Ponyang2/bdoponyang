@@ -182,7 +182,7 @@ export default function WarHistoryPage() {
                     {sortedRecords.map((rec) => (
                       <tr key={rec.id} className="border-t border-slate-700/50 hover:bg-slate-800/50 transition-colors">
                         <td className="px-4 py-3 text-white font-semibold whitespace-nowrap text-base text-center">{rec.alliance_name}</td>
-                        <td className="px-4 py-3 text-gray-300 text-base whitespace-nowrap">{rec.occupied_area}</td>
+                        <td className="px-4 py-3 text-gray-300 text-base whitespace-nowrap font-semibold text-center">{rec.occupied_area}</td>
                         <td className="px-4 py-3 text-center text-blue-300 text-base">{rec.fort_stage ?? '-'}</td>
                         <td className={`px-4 py-3 text-center text-base font-bold ${rec.result === '점령성공' ? 'text-emerald-300' : 'text-red-400'}`}>{rec.result}</td>
                       </tr>

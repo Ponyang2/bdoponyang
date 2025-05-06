@@ -10,7 +10,7 @@ export async function getWeeklyWarRanking() {
          COUNT(DISTINCT w.id) AS participated
        FROM war_records w
        JOIN alliances a ON w.alliance_id = a.id
-       WHERE war_date >= CURRENT_DATE - INTERVAL '7 days'
+       WHERE war_date >= CURRENT_DATE - INTERVAL '6 days'
        GROUP BY a.id, a.name
        ORDER BY count DESC`
     )
@@ -30,12 +30,12 @@ export async function getMonthlyWarRanking() {
     const result = await client.query(
       `SELECT
          a.name AS alliance_name,
-         COUNT(*) FILTER (WHERE w.result = '점령성공') AS count,
-         COUNT(*) AS participated
+         COUNT(DISTINCT w.id) FILTER (WHERE w.result = '점령성공') AS count,
+         COUNT(DISTINCT w.id) AS participated
        FROM war_records w
        JOIN alliances a ON w.alliance_id = a.id
        WHERE war_date >= CURRENT_DATE - INTERVAL '1 month'
-       GROUP BY a.name
+       GROUP BY a.id, a.name
        ORDER BY count DESC`
     )
     return result.rows.map(r => ({
@@ -54,12 +54,12 @@ export async function getYearlyWarRanking() {
     const result = await client.query(
       `SELECT
          a.name AS alliance_name,
-         COUNT(*) FILTER (WHERE w.result = '점령성공') AS count,
-         COUNT(*) AS participated
+         COUNT(DISTINCT w.id) FILTER (WHERE w.result = '점령성공') AS count,
+         COUNT(DISTINCT w.id) AS participated
        FROM war_records w
        JOIN alliances a ON w.alliance_id = a.id
        WHERE war_date >= CURRENT_DATE - INTERVAL '1 year'
-       GROUP BY a.name
+       GROUP BY a.id, a.name
        ORDER BY count DESC`
     )
     return result.rows.map(r => ({

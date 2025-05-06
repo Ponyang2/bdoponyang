@@ -10,6 +10,8 @@ export async function GET(req: Request) {
   const { searchParams } = new URL(req.url)
   const tierFilter = searchParams.get('tier')
   const period = searchParams.get('period') || 'weekly'
+  const start = searchParams.get('start')
+  const end = searchParams.get('end')
 
   try {
     const client = await db.connect()
@@ -25,15 +27,19 @@ export async function GET(req: Request) {
 
       // 기간에 따른 쿼리 구성
       let dateFilter = ''
-      switch (period) {
-        case 'monthly':
-          dateFilter = 'CURRENT_DATE - INTERVAL \'1 month\''
-          break
-        case 'yearly':
-          dateFilter = 'CURRENT_DATE - INTERVAL \'1 year\''
-          break
-        default:
-          dateFilter = 'CURRENT_DATE - INTERVAL \'7 days\''
+      if (start && end) {
+        dateFilter = `w.war_date >= '${start}' AND w.war_date <= '${end}'`
+      } else {
+        switch (period) {
+          case 'monthly':
+            dateFilter = 'w.war_date >= CURRENT_DATE - INTERVAL \'1 month\''
+            break
+          case 'yearly':
+            dateFilter = 'w.war_date >= CURRENT_DATE - INTERVAL \'1 year\''
+            break
+          default:
+            dateFilter = 'w.war_date >= CURRENT_DATE - INTERVAL \'6 days\''
+        }
       }
 
       const query = `
@@ -41,14 +47,15 @@ export async function GET(req: Request) {
           SELECT DISTINCT w.id, w.alliance_id, w.result
           FROM war_records w
           JOIN alliances a ON w.alliance_id = a.id
-          WHERE w.war_date >= ${dateFilter}
+          WHERE ${dateFilter}
             AND w.region = ANY($1)
             AND a.tiers @> ARRAY[$2]::text[]
+            AND w.war_type = '거점전'
         )
         SELECT
           a.name AS alliance_name,
-          COUNT(*) FILTER (WHERE fr.result = '점령성공') AS count,
-          COUNT(*) AS participated
+          COUNT(DISTINCT fr.id) FILTER (WHERE fr.result = '점령성공') AS count,
+          COUNT(DISTINCT fr.id) AS participated
         FROM filtered_records fr
         JOIN alliances a ON fr.alliance_id = a.id
         GROUP BY a.id, a.name
