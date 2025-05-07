@@ -16,6 +16,7 @@ interface Guild {
   updated_at: Date
   rankChange?: string
   snapshot_date: Date
+  score_diff?: string
 }
 
 export default async function GuildLeaguePage() {
@@ -34,6 +35,7 @@ export default async function GuildLeaguePage() {
     updated_at: guild.updated_at,
     snapshot_date: guild.snapshot_date,
     rankChange: guild.rank_diff,
+    score_diff: guild.score_diff,
   }))
 
   const guilds = data
@@ -84,6 +86,10 @@ export default async function GuildLeaguePage() {
           {guilds.map((guild) => {
             const rankChange = guild.rankChange || "-"
             const changeColor = getRankChangeStyle(rankChange)
+            // 점수 변화 색상
+            let scoreChangeColor = "text-gray-300"
+            if (guild.score_diff?.startsWith("▲")) scoreChangeColor = "text-red-400"
+            else if (guild.score_diff?.startsWith("▼")) scoreChangeColor = "text-blue-400"
 
             return (
               <tr
@@ -113,7 +119,14 @@ export default async function GuildLeaguePage() {
                     <span className="text-shadow-black">{guild.winRate}%</span>
                   )}
                 </td>
-                <td className="py-3 px-2 font-semibold">{guild.score}</td>
+                <td className="py-3 px-2 font-semibold">
+                  <div className="flex items-center justify-center">
+                    <span className="inline-block min-w-[56px] text-right">{guild.score}</span>
+                    <span className={`ml-1 text-xs ${scoreChangeColor} inline-block min-w-[48px] align-middle`}>
+                      ({guild.score_diff && guild.score_diff !== '-' ? guild.score_diff : ' - '})
+                    </span>
+                  </div>
+                </td>
               </tr>
             )
           })}

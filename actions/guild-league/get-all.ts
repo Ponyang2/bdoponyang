@@ -31,38 +31,39 @@ export async function getAllGuildLeague() {
   const prevDate = new Date(latestDate)
   prevDate.setDate(prevDate.getDate() - 1)
   const prevRows = await db.query(
-    `SELECT guild_name, rank FROM guild_league_history 
+    `SELECT guild_name, rank, score FROM guild_league_history 
      WHERE snapshot_date = $1`,
     [prevDate]
   )
   console.log('전날 데이터 개수:', prevRows.rows.length)
 
-  const prevMap = new Map<string, number>()
+  const prevMap = new Map<string, { rank: number, score: number }>()
   for (const row of prevRows.rows) {
     const name = row.guild_name.trim().normalize('NFC')
-    prevMap.set(name, row.rank)
-    console.log('전날 데이터:', name, row.rank)
+    prevMap.set(name, { rank: row.rank, score: row.score })
+    console.log('전날 데이터:', name, row.rank, row.score)
   }
 
   return latestRows.rows.map((row) => {
     const name = row.guild_name.trim().normalize('NFC')
-    const prevRank = prevMap.get(name)
-    console.log('길드:', name, '현재 순위:', row.rank, '이전 순위:', prevRank)
-    
-    let diff: string | null = null
-    if (prevRank === undefined) {
-      diff = 'NEW'
+    const prev = prevMap.get(name)
+    let rank_diff = '-'
+    let score_diff = '-'
+    if (prev) {
+      const rankChange = prev.rank - row.rank
+      rank_diff = rankChange > 0 ? `▲${rankChange}` : rankChange < 0 ? `▼${Math.abs(rankChange)}` : '-'
+      const scoreChange = row.score - prev.score
+      score_diff = scoreChange > 0 ? `▲${scoreChange}` : scoreChange < 0 ? `▼${Math.abs(scoreChange)}` : '-'
     } else {
-      const change = prevRank - row.rank
-      if (change > 0) diff = `▲${change}`
-      else if (change < 0) diff = `▼${Math.abs(change)}`
-      else diff = '-'
+      rank_diff = 'NEW'
+      score_diff = 'NEW'
     }
-    console.log('순위 변동:', diff)
-
+    console.log('길드:', name, '현재 순위:', row.rank, '이전 순위:', prev?.rank, '순위 변동:', rank_diff, '점수 변동:', score_diff)
+    
     return {
       ...row,
-      rank_diff: diff,
+      rank_diff,
+      score_diff,
     }
   })
 }

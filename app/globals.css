@@ -1,7 +1,7 @@
 @import "tailwindcss";
 @import "tw-animate-css";
 
-
+/*
 @custom-variant dark (&:is(.dark *));
 
 @theme inline {
@@ -43,6 +43,7 @@
   --radius-lg: var(--radius);
   --radius-xl: calc(var(--radius) + 4px);
 }
+*/
 
 body {
   /* background-color 제거 → Tailwind 클래스에 맡김 */
@@ -119,10 +120,18 @@ body {
 }
 
 @layer base {
-  * {
-    @apply border-border outline-ring/50;
-  }
   body {
-    @apply bg-background text-foreground;
+    @apply bg-zinc-900 text-white;
   }
+}
+
+@font-face {
+    font-family: 'GongGothicMedium';
+    src: url('https://fastly.jsdelivr.net/gh/projectnoonnu/noonfonts_20-10@1.0/GongGothicMedium.woff') format('woff');
+    font-weight: normal;
+    font-style: normal;
+}
+
+.font-gong {
+    font-family: 'GongGothicMedium', sans-serif;
 }
