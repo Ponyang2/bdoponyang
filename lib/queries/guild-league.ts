@@ -1,5 +1,4 @@
 import { db } from "@/lib/db"
-import { getRankChanges } from "@/lib/guild-league-history"
 
 export async function getGuildLeagueTop10() {
   // 최신 날짜 구하기
